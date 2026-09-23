@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UL Laptop Registration &amp; Pass-Out Verification System</title>
+<style>
+  :root {
+    --bg:#f5f7fa; --surface:#ffffff; --surface-alt:#eaf0f6; --border:#d7dee6;
+    --text:#16202b; --text-muted:#5b6b7c;
+    --navy:#1f3a5f; --navy-dark:#152943; --accent:#2f6fed; --accent-bg:#e8f0ff;
+    --green:#1f8a4c; --green-bg:#e6f6ec; --green-border:#b7e3c7;
+    --red:#c0392b; --red-bg:#fdecea; --red-border:#f3bdb6;
+    --amber:#a9660b; --amber-bg:#fdf3e3; --amber-border:#f0d59a;
+    --radius:10px;
+    --font: Arial, Helvetica, sans-serif;
+    box-sizing:border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#0e1520; --surface:#161f2e; --surface-alt:#1e2a3d; --border:#2b3a4f;
+      --text:#e7edf5; --text-muted:#93a3b8;
+      --navy:#6f9ade; --navy-dark:#496da3; --accent:#5c9cff; --accent-bg:#132743;
+      --green:#3fcf82; --green-bg:#0f3324; --green-border:#1e5c3c;
+      --red:#ff7a6d; --red-bg:#3a1614; --red-border:#6b2b25;
+      --amber:#ffc158; --amber-bg:#3a2c0d; --amber-border:#6b4f16;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#0e1520; --surface:#161f2e; --surface-alt:#1e2a3d; --border:#2b3a4f;
+    --text:#e7edf5; --text-muted:#93a3b8;
+    --navy:#6f9ade; --navy-dark:#496da3; --accent:#5c9cff; --accent-bg:#132743;
+    --green:#3fcf82; --green-bg:#0f3324; --green-border:#1e5c3c;
+    --red:#ff7a6d; --red-bg:#3a1614; --red-border:#6b2b25;
+    --amber:#ffc158; --amber-bg:#3a2c0d; --amber-border:#6b4f16;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { height:100%; }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--text); font-family:var(--font);
+    -webkit-font-smoothing:antialiased;
+  }
+  a { color:var(--accent); }
+
+  header.topbar {
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(135deg,var(--navy) 0%, var(--navy-dark) 100%);
+    color:#fff;
+    padding: calc(14px + env(safe-area-inset-top,0px)) 18px 14px;
+  }
+  .topbar-inner {
+    max-width:1180px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .brand { display:flex; align-items:center; gap:12px; min-width:0; }
+  .brand-badge {
+    width:40px; height:40px; border-radius:9px; background:rgba(255,255,255,0.15);
+    display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
+    border:1px solid rgba(255,255,255,0.25);
+  }
+  .brand-text h1 { font-size:15px; margin:0; font-weight:700; letter-spacing:.2px; }
+  .brand-text p { margin:2px 0 0; font-size:11.5px; color:rgba(255,255,255,0.72); }
+  .role-switch { display:flex; align-items:center; gap:8px; font-size:12.5px; color:rgba(255,255,255,0.85); }
+  .role-switch select {
+    background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.35);
+    border-radius:7px; padding:6px 9px; font-size:12.5px; font-family:var(--font);
+  }
+  .role-switch select option { color:#111; }
+  .role-switch .btn-ghost {
+    background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.35);
+  }
+  .role-switch .btn-ghost:hover { background:rgba(255,255,255,0.22); }
+
+  nav.tabs {
+    position:sticky; top:0; z-index:19;
+    background:var(--surface); border-bottom:1px solid var(--border);
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .tabs-inner { max-width:1180px; margin:0 auto; display:flex; gap:2px; padding:0 10px; }
+  .tab-btn {
+    flex-shrink:0; border:none; background:transparent; color:var(--text-muted);
+    font-family:var(--font); font-size:13.5px; font-weight:600; padding:13px 14px;
+    cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap;
+  }
+  .tab-btn:hover { color:var(--text); }
+  .tab-btn.active { color:var(--navy); border-bottom-color:var(--accent); }
+
+  main { max-width:1180px; margin:0 auto; padding:20px 18px 60px; }
+  .panel { display:none; animation:fade .15s ease; }
+  .panel.active { display:block; }
+  @keyframes fade { from{opacity:0} to{opacity:1} }
+
+  h2.section-title { font-size:19px; margin:0 0 4px; color:var(--navy); }
+  p.section-desc { margin:0 0 18px; color:var(--text-muted); font-size:13.5px; max-width:760px; line-height:1.5; }
+
+  .card {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin-bottom:16px;
+  }
+  .card h3 { margin:0 0 10px; font-size:14.5px; color:var(--navy); }
+
+  .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:18px; }
+  .stat-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px; text-align:left;
+  }
+  .stat-card .num { font-size:26px; font-weight:800; color:var(--navy); line-height:1; }
+  .stat-card .lbl { font-size:12px; color:var(--text-muted); margin-top:6px; }
+
+  .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+  label.field { display:flex; flex-direction:column; gap:5px; font-size:12.5px; color:var(--text-muted); font-weight:600; }
+  input, select {
+    font-family:var(--font); font-size:14px; padding:9px 11px; border-radius:8px;
+    border:1px solid var(--border); background:var(--bg); color:var(--text); width:100%;
+  }
+  input:focus, select:focus { outline:2px solid var(--accent); outline-offset:1px; }
+
+  .btn {
+    font-family:var(--font); font-weight:700; font-size:13.5px; border:none; border-radius:8px;
+    padding:10px 18px; cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+  }
+  .btn-primary { background:var(--navy); color:#fff; }
+  .btn-primary:hover { background:var(--navy-dark); }
+  .btn-outline { background:transparent; color:var(--navy); border:1px solid var(--navy); }
+  .btn-ghost { background:var(--surface-alt); color:var(--text); }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+  .btn-row { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+
+  .banner {
+    border-radius:var(--radius); padding:14px 16px; margin-top:16px; font-size:13.5px; line-height:1.5;
+    border:1px solid; display:flex; gap:10px; align-items:flex-start;
+  }
+  .banner .ico { font-size:18px; line-height:1; margin-top:1px; }
+  .banner b { display:block; margin-bottom:3px; font-size:14px; }
+  .banner.approved { background:var(--green-bg); border-color:var(--green-border); color:var(--green); }
+  .banner.flagged { background:var(--red-bg); border-color:var(--red-border); color:var(--red); }
+  .banner.unregistered { background:var(--amber-bg); border-color:var(--amber-border); color:var(--amber); }
+  .banner .detail { color:var(--text); font-weight:400; }
+
+  .badge { display:inline-block; font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; border:1px solid; }
+  .badge.approved { background:var(--green-bg); color:var(--green); border-color:var(--green-border); }
+  .badge.flagged { background:var(--red-bg); color:var(--red); border-color:var(--red-border); }
+  .badge.unregistered { background:var(--amber-bg); color:var(--amber); border-color:var(--amber-border); }
+  .badge.registered { background:var(--accent-bg); color:var(--accent); border-color:var(--accent); }
+  .badge.updated { background:var(--accent-bg); color:var(--accent); border-color:var(--accent); }
+  .badge.system { background:var(--surface-alt); color:var(--navy); border-color:var(--border); }
+
+  .table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius); }
+  table { border-collapse:collapse; width:100%; min-width:640px; font-size:13px; }
+  thead th {
+    text-align:left; background:var(--surface-alt); color:var(--navy); font-size:11.5px;
+    text-transform:uppercase; letter-spacing:.3px; padding:10px 12px; border-bottom:1px solid var(--border);
+    position:sticky; top:0;
+  }
+  tbody td { padding:9px 12px; border-bottom:1px solid var(--border); color:var(--text); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover { background:var(--surface-alt); }
+  .mono { font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12.5px; }
+  .muted { color:var(--text-muted); }
+  .reveal-btn { font-size:11px; color:var(--accent); background:none; border:none; cursor:pointer; padding:0; font-weight:600; }
+
+  .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .toolbar input[type="search"] { max-width:260px; }
+  .toolbar .filters { display:flex; gap:6px; flex-wrap:wrap; }
+  .chip {
+    font-size:12px; font-weight:600; padding:6px 12px; border-radius:999px; border:1px solid var(--border);
+    background:var(--surface); color:var(--text-muted); cursor:pointer;
+  }
+  .chip.active { background:var(--navy); border-color:var(--navy); color:#fff; }
+
+  .pagination { display:flex; gap:6px; align-items:center; margin-top:12px; font-size:12.5px; color:var(--text-muted); flex-wrap:wrap; }
+  .pagination button { border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:6px; padding:5px 10px; cursor:pointer; font-size:12.5px; }
+  .pagination button:disabled { opacity:.4; cursor:not-allowed; }
+  .pagination button.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+
+  .note { font-size:12px; color:var(--text-muted); margin-top:10px; line-height:1.5; }
+  footer.foot { text-align:center; padding:22px 18px 40px; color:var(--text-muted); font-size:11.5px; }
+  .btn-sm { padding:5px 11px; font-size:12px; }
+
+  .modal-backdrop {
+    display:none; position:fixed; inset:0; z-index:50; background:rgba(10,16,24,0.55);
+    align-items:center; justify-content:center; padding:20px; overflow-y:auto;
+  }
+  .modal-backdrop.open { display:flex; }
+  .modal-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px; width:100%; max-width:320px; box-shadow:0 12px 32px rgba(0,0,0,0.25);
+    margin:auto;
+  }
+  .modal-card.wide { max-width:600px; }
+  .modal-card h3 { margin:0 0 6px; font-size:15px; color:var(--navy); }
+  .modal-card p { margin:0 0 14px; font-size:12.5px; color:var(--text-muted); line-height:1.5; }
+  .modal-card.pin input { text-align:center; letter-spacing:4px; font-size:18px; }
+  .pin-error { color:var(--red); font-size:12px; min-height:16px; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-badge">🔒</div>
+      <div class="brand-text">
+        <h1>UL Laptop Registration &amp; Pass-Out Verification</h1>
+        <p>Campus Protection Services — University of Limpopo</p>
+      </div>
+    </div>
+    <div class="role-switch">
+      <span>Signed in as</span>
+      <select id="roleSelect">
+        <option value="officer">Campus Protection Officer</option>
+        <option value="admin">System Administrator</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" id="changePinBtn" style="display:none;">Change PIN</button>
+    </div>
+  </div>
+</header>
+
+<div class="modal-backdrop" id="pinBackdrop">
+  <div class="modal-card pin">
+    <h3>Administrator sign-in</h3>
+    <p>Enter the System Administrator PIN to continue.</p>
+    <input type="password" id="pinInput" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Enter PIN">
+    <div id="pinError" class="pin-error"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="pinConfirm">Confirm</button>
+      <button class="btn btn-ghost" id="pinCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="changePinBackdrop">
+  <div class="modal-card pin">
+    <h3>Change Administrator PIN</h3>
+    <p>Only the System Administrator can change this PIN. It is required immediately for the next sign-in.</p>
+    <label class="field" style="margin-bottom:10px;">Current PIN
+      <input type="password" id="cpCurrent" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Current PIN">
+    </label>
+    <label class="field" style="margin-bottom:10px;">New PIN
+      <input type="password" id="cpNew" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="New PIN (4–6 digits)">
+    </label>
+    <label class="field">Confirm new PIN
+      <input type="password" id="cpConfirm" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Re-enter new PIN">
+    </label>
+    <div id="cpError" class="pin-error"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="cpSave">Save new PIN</button>
+      <button class="btn btn-ghost" id="cpCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="editBackdrop">
+  <div class="modal-card wide">
+    <h3>Edit registered device</h3>
+    <p>Update the student's details or laptop information below. The serial number is still checked for duplicates, and every change is written to the audit log.</p>
+    <div class="form-grid">
+      <label class="field">Full name<input id="editName" type="text"></label>
+      <label class="field">Student number<input id="editStudent" type="text"></label>
+      <label class="field">Faculty
+        <select id="editFaculty"></select>
+      </label>
+      <label class="field">Contact number<input id="editContact" type="text"></label>
+      <label class="field">Residence / address<input id="editResidence" type="text"></label>
+      <label class="field">Laptop brand<input id="editBrand" type="text"></label>
+      <label class="field">Laptop model<input id="editModel" type="text"></label>
+      <label class="field">Laptop serial number<input id="editSerial" type="text"></label>
+    </div>
+    <div id="editError" class="pin-error"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="editSave">Save changes</button>
+      <button class="btn btn-ghost" id="editCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<nav class="tabs">
+  <div class="tabs-inner" id="tabBar"></div>
+</nav>
+
+<main>
+  <!-- VERIFY -->
+  <section class="panel" data-panel="verify">
+    <h2 class="section-title">Verify Pass-Out</h2>
+    <p class="section-desc">This is the core control from the proposal. Enter the laptop's serial number and the student number of the person requesting the pass-out — the system checks whether they match a single registered owner before the laptop is allowed to leave campus.</p>
+    <div class="card">
+      <div class="form-grid">
+        <label class="field">Laptop serial number
+          <input id="vfySerial" type="text" placeholder="e.g. DL7K4M2Q" autocomplete="off">
+        </label>
+        <label class="field">Requester's student number
+          <input id="vfyStudent" type="text" placeholder="e.g. 202145821" autocomplete="off">
+        </label>
+        <label class="field">Officer on duty
+          <input id="vfyOfficer" type="text" placeholder="e.g. Officer Nkuna" autocomplete="off">
+        </label>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="vfyBtn">Verify &amp; check ownership</button>
+        <button class="btn btn-ghost" id="vfyClear">Clear</button>
+      </div>
+      <div id="vfyResult"></div>
+    </div>
+    <div class="card">
+      <h3>Quick scenario checks</h3>
+      <p class="muted" style="font-size:12.5px; margin:-4px 0 12px;">Click a scenario to auto-fill the fields above and run the check.</p>
+      <div class="btn-row" id="scenarioBtns"></div>
+    </div>
+  </section>
+
+  <!-- REGISTER -->
+  <section class="panel" data-panel="register">
+    <h2 class="section-title">Register a Laptop</h2>
+    <p class="section-desc" id="registerDesc">Compulsory capture of student and device details. The serial number is checked against every existing record before a new registration is accepted.</p>
+    <div id="registerBody"></div>
+  </section>
+
+  <!-- DATABASE -->
+  <section class="panel" data-panel="database">
+    <h2 class="section-title">Registered Laptop Database</h2>
+    <p class="section-desc"><span id="dbCount">100</span> registered devices. Access to this database is restricted to System Administrators, who can edit a record if a student needs to update their details.</p>
+    <div class="toolbar">
+      <input type="search" id="dbSearch" placeholder="Search name, student no., serial, residence…">
+      <div class="filters" id="facultyFilters"></div>
+    </div>
+    <div class="table-wrap"><table id="dbTable"></table></div>
+    <div class="pagination" id="dbPagination"></div>
+  </section>
+
+  <!-- AUDIT LOG -->
+  <section class="panel" data-panel="audit">
+    <h2 class="section-title">Audit Log</h2>
+    <p class="section-desc">A permanent, append-only record of every pass-out check and registration event. Entries cannot be edited or deleted from this interface — only added to.</p>
+    <div class="toolbar">
+      <div class="filters" id="auditFilters"></div>
+    </div>
+    <div class="table-wrap"><table id="auditTable"></table></div>
+    <div class="pagination" id="auditPagination"></div>
+  </section>
+
+</main>
+
+<footer class="foot">University of Limpopo — Campus Protection Services. Access to registered student and device information is restricted to authorised personnel.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- seeded RNG (deterministic seed data) ---------------- */
+  function mulberry32(seed){
+    return function(){
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const rand = mulberry32(20260922);
+  function pick(arr){ return arr[Math.floor(rand()*arr.length)]; }
+  function randInt(min,max){ return Math.floor(rand()*(max-min+1))+min; }
+
+  /* ---------------- name / data pools ---------------- */
+  const firstM = ["Thabo","Sipho","Mpho","Kagiso","Tshepo","Lesego","Katlego","Tumelo","Karabo","Nkosana","Rendani","Ndivhuwo","Vusi","Sizwe","Mandla","Bongani","Nkululeko","Themba","Kgotso","Kabelo","Neo","Lwazi","Musa","Sabelo","Thulani","Given","Hlulani","Mukovhe","Fhatuwani","Innocent","Onthatile","Reabetswe","Tebogo","Lehlogonolo","Ofentse","Amogelang"];
+  const firstF = ["Lerato","Palesa","Nomvula","Thandiwe","Refilwe","Boitumelo","Dikeledi","Mmatshepo","Nthabiseng","Rirhandzu","Vhutshilo","Khensani","Precious","Mapula","Tshegofatso","Ntsako","Rofhiwa","Fikile","Zanele","Nomsa","Ayanda","Busisiwe","Cynthia","Portia","Dimakatso","Kgomotso","Kefilwe","Lebogang","Mahlatse","Nthabeleng","Rachel","Sinah","Vuyelwa","Winnie","Zodwa","Onkarabile"];
+  const surnames = ["Mahlangu","Mokoena","Sithole","Maluleke","Baloyi","Ndlovu","Mabasa","Chauke","Maake","Mashego","Mabotja","Rapetsoa","Nkoana","Mohlala","Malatji","Mabuza","Mulaudzi","Tshivhase","Netshitenzhe","Hlungwani","Ngobeni","Mkhabela","Ramabulana","Mmbara","Mudau","Rasila","Makhado","Phalane","Sathekge","Mokgadi","Mongwe","Sebola","Kgatla","Seabi","Manamela","Mongalo","Rambau","Managa","Nemutandani","Mavhungu"];
+
+  const FACULTIES = ["Humanities","Management and Law","Science and Agriculture","Health Sciences"];
+  const programmes = [
+    ["Humanities","BA Media, Communication and Information Studies"],
+    ["Humanities","Bachelor of Library and Information Science"],
+    ["Humanities","BA Psychology"],
+    ["Humanities","BA Criminology"],
+    ["Humanities","Bachelor of Social Work"],
+    ["Management and Law","LLB Law"],
+    ["Management and Law","BCom Accounting"],
+    ["Management and Law","BCom Economics"],
+    ["Management and Law","Bachelor of Public Administration"],
+    ["Science and Agriculture","BSc Computer Science"],
+    ["Science and Agriculture","BSc Mathematics"],
+    ["Science and Agriculture","BSc Agriculture"],
+    ["Science and Agriculture","BSc Life Sciences"],
+    ["Health Sciences","Bachelor of Nursing"],
+    ["Health Sciences","BSc Dietetics"],
+    ["Health Sciences","Bachelor of Pharmacy"]
+  ];
+  const residences = ["Residence Block A","Residence Block B","Residence Block C","Residence Block D","Residence Block E","Residence Block F","Off-campus – Mankweng","Off-campus – Sovenga","Off-campus – Polokwane"];
+  const laptops = [
+    ["Dell","Inspiron 15 3000"],["Dell","Latitude 3420"],["HP","Pavilion 15"],["HP","ProBook 450 G8"],
+    ["Lenovo","IdeaPad 3"],["Lenovo","ThinkPad E14"],["Acer","Aspire 5"],["Asus","VivoBook 15"],
+    ["Apple","MacBook Air M1"],["Mecer","Prodigy V2"],["Proline","Clevo N4"],["Samsung","Notebook Pen"]
+  ];
+  const netPrefixes = ["71","72","73","76","78","79","81","82","83","84"];
+  const SERIAL_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+  function makeSerial(brand, used){
+    const prefix = brand.slice(0,2).toUpperCase();
+    let s;
+    do {
+      s = prefix;
+      for(let i=0;i<8;i++) s += SERIAL_CHARS[Math.floor(rand()*SERIAL_CHARS.length)];
+    } while(used.has(s));
+    used.add(s);
+    return s;
+  }
+  function makeStudentNumber(used){
+    let n;
+    do {
+      const yy = String(randInt(19,25)).padStart(2,"0");
+      const rest = String(randInt(0,99999)).padStart(5,"0");
+      n = "20"+yy+rest;
+    } while(used.has(n));
+    used.add(n);
+    return n;
+  }
+  function makeContact(){
+    return "0"+pick(netPrefixes)+" "+String(randInt(0,999)).padStart(3,"0")+" "+String(randInt(0,9999)).padStart(4,"0");
+  }
+  function makeDate(){
+    const month = randInt(1,9); // Jan .. Sep 2026
+    const day = randInt(1,28);
+    return "2026-"+String(month).padStart(2,"0")+"-"+String(day).padStart(2,"0");
+  }
+
+  function buildSeedRecords(){
+    const usedSerials = new Set();
+    const usedStudentNos = new Set();
+    const records = [];
+    for(let i=1;i<=100;i++){
+      const isMale = rand() < 0.5;
+      const first = isMale ? pick(firstM) : pick(firstF);
+      const surname = pick(surnames);
+      const [faculty, programme] = pick(programmes);
+      const [brand, model] = pick(laptops);
+      records.push({
+        id: i,
+        studentNumber: makeStudentNumber(usedStudentNos),
+        fullName: first+" "+surname,
+        contact: makeContact(),
+        residence: pick(residences),
+        faculty, programme,
+        laptopBrand: brand, laptopModel: model,
+        serial: makeSerial(brand, usedSerials),
+        registeredDate: makeDate()
+      });
+    }
+    return records;
+  }
+
+  function buildSeedAudit(records){
+    // a handful of illustrative historical events, including two flagged mismatches
+    const r = records;
+    const pickRec = (idx) => r[idx % r.length];
+    const a = pickRec(4), b = pickRec(17), c = pickRec(32), d = pickRec(55), e = pickRec(61);
+    return [
+      { ts:"2026-02-10 08:14", type:"registered", serial:a.serial, studentNumber:a.studentNumber, name:a.fullName, officer:"System", note:"Initial registration at orientation." },
+      { ts:"2026-03-03 15:41", type:"approved", serial:b.serial, studentNumber:b.studentNumber, name:b.fullName, officer:"Officer Nkuna", note:"Serial matched registered owner." },
+      { ts:"2026-04-18 11:02", type:"flagged", serial:c.serial, studentNumber: makeStudentNumber(new Set()), name:null, officer:"Officer Maluleke",
+        note:"Requester's student number did not match the registered owner ("+c.fullName+"). Pass-out withheld; matter referred for investigation." },
+      { ts:"2026-06-05 09:27", type:"approved", serial:d.serial, studentNumber:d.studentNumber, name:d.fullName, officer:"Officer Nkuna", note:"Serial matched registered owner." },
+      { ts:"2026-07-22 17:50", type:"unregistered", serial:"UNKNOWN482", studentNumber:"202218937", name:null, officer:"Officer Ramabulana", note:"Serial not found in database. Manual verification via proof of purchase completed on site." },
+      { ts:"2026-08-11 13:16", type:"flagged", serial:e.serial, studentNumber: makeStudentNumber(new Set()), name:null, officer:"Officer Maluleke",
+        note:"Requester's student number did not match the registered owner ("+e.fullName+"). Registered owner confirmed the laptop had been lent to a housemate; pass-out later approved manually by supervisor." },
+      { ts:"2026-09-01 08:03", type:"approved", serial:pickRec(70).serial, studentNumber:pickRec(70).studentNumber, name:pickRec(70).fullName, officer:"Officer Nkuna", note:"Serial matched registered owner." }
+    ];
+  }
+
+  /* ---------------- storage layer ---------------- */
+  const STORE_KEY = "ul_laptop_registration_system_v1";
+  const DEFAULT_ADMIN_PIN = "871101";
+  let state = null;
+
+  function loadState(){
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if(raw){
+        const parsed = JSON.parse(raw);
+        if(parsed && Array.isArray(parsed.records) && Array.isArray(parsed.audit)){
+          if(typeof parsed.adminPin !== "string" || !parsed.adminPin) parsed.adminPin = DEFAULT_ADMIN_PIN;
+          return parsed;
+        }
+      }
+    } catch(e){ /* storage unavailable — fall back to fresh seed */ }
+    const records = buildSeedRecords();
+    const audit = buildSeedAudit(records);
+    return { records, audit, adminPin: DEFAULT_ADMIN_PIN };
+  }
+  function saveState(){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){ /* ignore */ }
+  }
+  function resetState(){
+    const records = buildSeedRecords();
+    state = { records, audit: buildSeedAudit(records), adminPin: DEFAULT_ADMIN_PIN };
+    saveState();
+  }
+
+  state = loadState();
+
+  /* ---------------- helpers ---------------- */
+  function findBySerial(serial){
+    const s = (serial||"").trim().toUpperCase();
+    return state.records.find(r => r.serial === s) || null;
+  }
+  function findByStudentNumber(num){
+    const s = (num||"").trim();
+    return state.records.find(r => r.studentNumber === s) || null;
+  }
+  function maskContact(c){
+    const parts = c.split(" ");
+    if(parts.length < 3) return c;
+    return parts[0]+" *** "+parts[2];
+  }
+  function maskStudentNo(n){
+    if(!n || n.length < 5) return n;
+    return n.slice(0,2)+"***"+n.slice(-3);
+  }
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+  }
+  let currentRole = "officer";
+  function isAdmin(){ return currentRole === "admin"; }
+
+  function logAudit(entry){
+    state.audit.unshift(Object.assign({ ts: nowStamp() }, entry));
+    saveState();
+  }
+  function nowStamp(){
+    const d = new Date();
+    const p = n => String(n).padStart(2,"0");
+    return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
+  }
+
+  const TYPE_LABEL = { approved:"Approved", flagged:"Flagged", unregistered:"Unregistered", registered:"Registered", updated:"Updated", system:"System" };
+
+  /* ---------------- tabs ---------------- */
+  const TABS = [
+    {id:"verify", label:"Verify Pass-Out"},
+    {id:"register", label:"Register Laptop"},
+    {id:"database", label:"Database", adminOnly:true},
+    {id:"audit", label:"Audit Log"}
+  ];
+  const tabBar = document.getElementById("tabBar");
+  TABS.forEach(t => {
+    const btn = document.createElement("button");
+    btn.className = "tab-btn"; btn.textContent = t.label; btn.dataset.tab = t.id;
+    if(t.adminOnly) btn.dataset.adminOnly = "true";
+    btn.addEventListener("click", () => showTab(t.id));
+    tabBar.appendChild(btn);
+  });
+  function showTab(id){
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+    document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.dataset.panel === id));
+    if(id === "database") renderDatabase();
+    if(id === "audit") renderAuditTab();
+    if(id === "register") renderRegisterPanel();
+    window.scrollTo({top:0, behavior:"instant"});
+  }
+
+  function updateTabVisibility(){
+    document.querySelectorAll('.tab-btn[data-admin-only="true"]').forEach(b => {
+      b.style.display = isAdmin() ? "" : "none";
+    });
+    const active = document.querySelector(".tab-btn.active");
+    if(active && active.dataset.adminOnly === "true" && !isAdmin()){
+      showTab("verify");
+    }
+    const cpBtn = document.getElementById("changePinBtn");
+    if(cpBtn) cpBtn.style.display = isAdmin() ? "" : "none";
+  }
+
+  /* ---------------- verify pass-out ---------------- */
+  const vfySerial = document.getElementById("vfySerial");
+  const vfyStudent = document.getElementById("vfyStudent");
+  const vfyOfficer = document.getElementById("vfyOfficer");
+  const vfyResult = document.getElementById("vfyResult");
+
+  document.getElementById("vfyBtn").addEventListener("click", runVerify);
+  document.getElementById("vfyClear").addEventListener("click", () => {
+    vfySerial.value=""; vfyStudent.value=""; vfyResult.innerHTML="";
+  });
+
+  function runVerify(){
+    const serial = vfySerial.value.trim().toUpperCase();
+    const studentNo = vfyStudent.value.trim();
+    const officer = vfyOfficer.value.trim() || "Unnamed officer";
+    if(!serial || !studentNo){
+      vfyResult.innerHTML = `<div class="banner flagged"><div class="ico">⚠️</div><div><b>Missing information</b><div class="detail">Enter both the laptop serial number and the requester's student number before verifying.</div></div></div>`;
+      return;
+    }
+    const record = findBySerial(serial);
+    let html = "";
+    if(!record){
+      logAudit({ type:"unregistered", serial, studentNumber:studentNo, name:null, officer, note:"Serial not found in database at point of exit." });
+      html = `<div class="banner unregistered"><div class="ico">❔</div><div><b>Unregistered device</b><div class="detail">No laptop with serial <span class="mono">${escapeHtml(serial)}</span> is registered. This pass-out cannot be auto-approved — request proof of purchase or an affidavit, and log the exception manually.</div></div></div>`;
+    } else if(record.studentNumber === studentNo){
+      logAudit({ type:"approved", serial, studentNumber:studentNo, name:record.fullName, officer, note:"Serial matched registered owner." });
+      html = `<div class="banner approved"><div class="ico">✅</div><div><b>Pass-out approved</b><div class="detail">Serial <span class="mono">${escapeHtml(serial)}</span> is registered to <b>${escapeHtml(record.fullName)}</b> (${escapeHtml(maskStudentNo(record.studentNumber))}), matching the requester. Laptop may leave campus.</div></div></div>`;
+    } else {
+      logAudit({ type:"flagged", serial, studentNumber:studentNo, name:record.fullName, officer, note:"Requester's student number did not match the registered owner ("+record.fullName+")." });
+      html = `<div class="banner flagged"><div class="ico">🚩</div><div><b>Ownership mismatch — pass-out withheld</b><div class="detail">Serial <span class="mono">${escapeHtml(serial)}</span> is registered to <b>${escapeHtml(record.fullName)}</b> (${escapeHtml(record.residence)}), not to student ${escapeHtml(maskStudentNo(studentNo))}. Do not release the laptop. Hold the device, contact the registered owner, and escalate to Campus Protection Services' investigations function.</div></div></div>`;
+    }
+    vfyResult.innerHTML = html;
+  }
+
+  function buildScenarios(){
+    const wrap = document.getElementById("scenarioBtns");
+    const legit = state.records[3];
+    const other = state.records[9];
+    const scenarios = [
+      { label:"Legitimate owner", serial:legit.serial, student:legit.studentNumber },
+      { label:"Stolen laptop, wrong requester", serial:legit.serial, student:other.studentNumber },
+      { label:"Unregistered / unknown device", serial:"ZZ000000", student:other.studentNumber }
+    ];
+    wrap.innerHTML = "";
+    scenarios.forEach(sc => {
+      const b = document.createElement("button");
+      b.className = "btn btn-outline";
+      b.textContent = sc.label;
+      b.addEventListener("click", () => {
+        vfySerial.value = sc.serial; vfyStudent.value = sc.student;
+        if(!vfyOfficer.value) vfyOfficer.value = "Officer Nkuna";
+        runVerify();
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  /* ---------------- register laptop ---------------- */
+  function renderRegisterPanel(){
+    const body = document.getElementById("registerBody");
+    const desc = document.getElementById("registerDesc");
+    desc.textContent = "Compulsory capture of student and device details. The serial number is checked against every existing record before a new registration is accepted.";
+    body.innerHTML = `
+      <div class="card">
+        <div class="form-grid">
+          <label class="field">Full name<input id="regName" type="text" placeholder="e.g. Karabo Sethole"></label>
+          <label class="field">Student number<input id="regStudent" type="text" placeholder="e.g. 202398123"></label>
+          <label class="field">Faculty
+            <select id="regFaculty">
+              <option value="">Select faculty…</option>
+              ${FACULTIES.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join("")}
+            </select>
+          </label>
+          <label class="field">Contact number<input id="regContact" type="text" placeholder="e.g. 071 234 5678"></label>
+          <label class="field">Residence / address<input id="regResidence" type="text" placeholder="e.g. Residence Block C"></label>
+          <label class="field">Laptop brand<input id="regBrand" type="text" placeholder="e.g. Dell"></label>
+          <label class="field">Laptop model<input id="regModel" type="text" placeholder="e.g. Inspiron 15"></label>
+          <label class="field">Laptop serial number<input id="regSerial" type="text" placeholder="e.g. DL9F3K21"></label>
+          <label class="field">Registered by (officer name)<input id="regOfficer" type="text" placeholder="e.g. Officer Nkuna"></label>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="regBtn">Check &amp; register</button>
+          <button class="btn btn-ghost" id="regClear">Clear</button>
+        </div>
+        <div id="regResult"></div>
+        <p class="note">Registering checks the serial number against all ${state.records.length} existing records first. A serial already on file is blocked, exactly as described in the proposal's duplicate-detection control.</p>
+      </div>`;
+    document.getElementById("regBtn").addEventListener("click", submitRegistration);
+    document.getElementById("regClear").addEventListener("click", () => {
+      ["regName","regStudent","regFaculty","regContact","regResidence","regBrand","regModel","regSerial","regOfficer"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("regResult").innerHTML = "";
+    });
+  }
+
+  function submitRegistration(){
+    const name = document.getElementById("regName").value.trim();
+    const studentNo = document.getElementById("regStudent").value.trim();
+    const faculty = document.getElementById("regFaculty").value;
+    const contact = document.getElementById("regContact").value.trim();
+    const residence = document.getElementById("regResidence").value.trim();
+    const brand = document.getElementById("regBrand").value.trim();
+    const model = document.getElementById("regModel").value.trim();
+    const serial = document.getElementById("regSerial").value.trim().toUpperCase();
+    const officer = document.getElementById("regOfficer").value.trim() || (isAdmin() ? "System Administrator" : "Campus Protection Officer");
+    const result = document.getElementById("regResult");
+
+    if(!name || !studentNo || !faculty || !contact || !residence || !brand || !serial){
+      result.innerHTML = `<div class="banner flagged"><div class="ico">⚠️</div><div><b>Incomplete form</b><div class="detail">All fields are required for registration to proceed, including a selected faculty.</div></div></div>`;
+      return;
+    }
+    const dup = findBySerial(serial);
+    if(dup){
+      result.innerHTML = `<div class="banner flagged"><div class="ico">🚩</div><div><b>Registration blocked — duplicate serial number</b><div class="detail">Serial <span class="mono">${escapeHtml(serial)}</span> is already registered to <b>${escapeHtml(dup.fullName)}</b> (${escapeHtml(maskStudentNo(dup.studentNumber))}). This device cannot be registered to a second student. Investigate before proceeding.</div></div></div>`;
+      logAudit({ type:"flagged", serial, studentNumber:studentNo, name:dup.fullName, officer, note:"Attempted duplicate registration blocked; serial already belongs to "+dup.fullName+"." });
+      return;
+    }
+    const rec = {
+      id: state.records.length + 1,
+      studentNumber: studentNo, fullName: name, contact, residence,
+      faculty, programme:"—", laptopBrand: brand, laptopModel: model || "—",
+      serial, registeredDate: new Date().toISOString().slice(0,10)
+    };
+    state.records.push(rec);
+    logAudit({ type:"registered", serial, studentNumber:studentNo, name, officer, note:"New laptop registered." });
+    saveState();
+    result.innerHTML = `<div class="banner approved"><div class="ico">✅</div><div><b>Laptop registered</b><div class="detail"><span class="mono">${escapeHtml(serial)}</span> is now linked to <b>${escapeHtml(name)}</b> (${escapeHtml(studentNo)}). This pairing will be checked at every future pass-out.</div></div></div>`;
+    document.getElementById("dbCount").textContent = state.records.length;
+  }
+
+  /* ---------------- database tab ---------------- */
+  let dbPage = 1;
+  const DB_PAGE_SIZE = 10;
+  let dbFacultyFilter = "all";
+
+  function renderDatabase(){
+    document.getElementById("dbCount").textContent = state.records.length;
+    const filters = document.getElementById("facultyFilters");
+    const faculties = ["all", ...Array.from(new Set(state.records.map(r=>r.faculty).filter(f=>f && f!=="—")))];
+    filters.innerHTML = faculties.map(f => `<button class="chip ${f===dbFacultyFilter?'active':''}" data-f="${escapeHtml(f)}">${f==="all"?"All faculties":escapeHtml(f)}</button>`).join("");
+    filters.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
+      dbFacultyFilter = c.dataset.f; dbPage = 1; renderDatabase();
+    }));
+    drawDbTable();
+  }
+  document.getElementById("dbSearch").addEventListener("input", () => { dbPage = 1; drawDbTable(); });
+
+  function drawDbTable(){
+    const q = document.getElementById("dbSearch").value.trim().toLowerCase();
+    let rows = state.records.filter(r => {
+      if(dbFacultyFilter !== "all" && r.faculty !== dbFacultyFilter) return false;
+      if(!q) return true;
+      return (r.fullName+" "+r.studentNumber+" "+r.serial+" "+r.residence).toLowerCase().includes(q);
+    });
+    const total = rows.length;
+    const totalPages = Math.max(1, Math.ceil(total / DB_PAGE_SIZE));
+    if(dbPage > totalPages) dbPage = totalPages;
+    const start = (dbPage-1)*DB_PAGE_SIZE;
+    const pageRows = rows.slice(start, start+DB_PAGE_SIZE);
+
+    const table = document.getElementById("dbTable");
+    table.innerHTML = `
+      <thead><tr>
+        <th>Student</th><th>Student No.</th><th>Residence</th><th>Laptop</th><th>Serial</th><th>Contact</th><th>Registered</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${pageRows.map(r => `
+        <tr>
+          <td>${escapeHtml(r.fullName)}<div class="muted" style="font-size:11px;">${escapeHtml(r.faculty)}</div></td>
+          <td class="mono">${escapeHtml(r.studentNumber)}</td>
+          <td>${escapeHtml(r.residence)}</td>
+          <td>${escapeHtml(r.laptopBrand)} ${escapeHtml(r.laptopModel)}</td>
+          <td class="mono">${escapeHtml(r.serial)}</td>
+          <td class="mono">${escapeHtml(r.contact)}</td>
+          <td>${escapeHtml(r.registeredDate)}</td>
+          <td><button class="btn btn-outline btn-sm" data-edit-id="${r.id}">Edit</button></td>
+        </tr>`).join("") || `<tr><td colspan="8" class="muted" style="text-align:center; padding:18px;">No matching records.</td></tr>`}
+      </tbody>`;
+    table.querySelectorAll("[data-edit-id]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const rec = state.records.find(r => r.id === Number(btn.dataset.editId));
+        if(rec) openEditModal(rec);
+      });
+    });
+
+    const pg = document.getElementById("dbPagination");
+    pg.innerHTML = `
+      <button ${dbPage<=1?"disabled":""} id="dbPrev">‹ Prev</button>
+      <span>Page ${dbPage} of ${totalPages} — ${total} record${total===1?"":"s"}</span>
+      <button ${dbPage>=totalPages?"disabled":""} id="dbNext">Next ›</button>`;
+    const prevBtn = document.getElementById("dbPrev"), nextBtn = document.getElementById("dbNext");
+    if(prevBtn) prevBtn.addEventListener("click", () => { dbPage--; drawDbTable(); });
+    if(nextBtn) nextBtn.addEventListener("click", () => { dbPage++; drawDbTable(); });
+  }
+
+  /* ---------------- edit registered record (Administrator only) ---------------- */
+  let editingId = null;
+  const editBackdrop = document.getElementById("editBackdrop");
+  const editError = document.getElementById("editError");
+  const editFacultySelect = document.getElementById("editFaculty");
+  editFacultySelect.innerHTML = `<option value="">Select faculty…</option>` +
+    FACULTIES.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join("");
+
+  function openEditModal(record){
+    editingId = record.id;
+    document.getElementById("editName").value = record.fullName;
+    document.getElementById("editStudent").value = record.studentNumber;
+    editFacultySelect.value = FACULTIES.includes(record.faculty) ? record.faculty : "";
+    document.getElementById("editContact").value = record.contact;
+    document.getElementById("editResidence").value = record.residence;
+    document.getElementById("editBrand").value = record.laptopBrand;
+    document.getElementById("editModel").value = record.laptopModel;
+    document.getElementById("editSerial").value = record.serial;
+    editError.textContent = "";
+    editBackdrop.classList.add("open");
+    setTimeout(() => document.getElementById("editName").focus(), 30);
+  }
+  function closeEditModal(){
+    editBackdrop.classList.remove("open");
+    editingId = null;
+  }
+  function saveEdit(){
+    const record = state.records.find(r => r.id === editingId);
+    if(!record){ closeEditModal(); return; }
+
+    const name = document.getElementById("editName").value.trim();
+    const studentNo = document.getElementById("editStudent").value.trim();
+    const faculty = editFacultySelect.value;
+    const contact = document.getElementById("editContact").value.trim();
+    const residence = document.getElementById("editResidence").value.trim();
+    const brand = document.getElementById("editBrand").value.trim();
+    const model = document.getElementById("editModel").value.trim();
+    const serial = document.getElementById("editSerial").value.trim().toUpperCase();
+
+    if(!name || !studentNo || !faculty || !contact || !residence || !brand || !serial){
+      editError.textContent = "All fields are required, including a selected faculty.";
+      return;
+    }
+    const dup = state.records.find(r => r.serial === serial && r.id !== editingId);
+    if(dup){
+      editError.textContent = `Serial ${serial} is already registered to ${dup.fullName}. Resolve this before saving.`;
+      return;
+    }
+
+    const changed = [];
+    if(record.fullName !== name) changed.push("name");
+    if(record.studentNumber !== studentNo) changed.push("student number");
+    if(record.faculty !== faculty) changed.push("faculty");
+    if(record.contact !== contact) changed.push("contact number");
+    if(record.residence !== residence) changed.push("residence");
+    if(record.laptopBrand !== brand || record.laptopModel !== (model || "—")) changed.push("laptop details");
+    if(record.serial !== serial) changed.push("serial number");
+
+    record.fullName = name;
+    record.studentNumber = studentNo;
+    record.faculty = faculty;
+    record.contact = contact;
+    record.residence = residence;
+    record.laptopBrand = brand;
+    record.laptopModel = model || "—";
+    record.serial = serial;
+
+    logAudit({
+      type:"updated", serial, studentNumber:studentNo, name, officer:"System Administrator",
+      note: changed.length ? "Record updated (" + changed.join(", ") + ")." : "Record saved with no changes."
+    });
+    saveState();
+    closeEditModal();
+    drawDbTable();
+  }
+  document.getElementById("editSave").addEventListener("click", saveEdit);
+  document.getElementById("editCancel").addEventListener("click", closeEditModal);
+  editBackdrop.addEventListener("click", (e) => { if(e.target === editBackdrop) closeEditModal(); });
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && editBackdrop.classList.contains("open")) closeEditModal();
+  });
+
+  /* ---------------- audit tab ---------------- */
+  let auditPage = 1;
+  const AUDIT_PAGE_SIZE = 10;
+  let auditTypeFilter = "all";
+
+  function renderAuditTab(){
+    const filters = document.getElementById("auditFilters");
+    const types = ["all","approved","flagged","unregistered","registered","updated","system"];
+    filters.innerHTML = types.map(t => `<button class="chip ${t===auditTypeFilter?'active':''}" data-t="${t}">${t==="all"?"All events":TYPE_LABEL[t]}</button>`).join("");
+    filters.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
+      auditTypeFilter = c.dataset.t; auditPage = 1; drawAuditTable();
+    }));
+    drawAuditTable();
+  }
+
+  function drawAuditTable(){
+    let rows = state.audit.filter(a => auditTypeFilter==="all" || a.type===auditTypeFilter);
+    const total = rows.length;
+    const totalPages = Math.max(1, Math.ceil(total/AUDIT_PAGE_SIZE));
+    if(auditPage > totalPages) auditPage = totalPages;
+    const start = (auditPage-1)*AUDIT_PAGE_SIZE;
+    const pageRows = rows.slice(start, start+AUDIT_PAGE_SIZE);
+    renderAuditTable(document.getElementById("auditTable"), pageRows, true);
+
+    const pg = document.getElementById("auditPagination");
+    pg.innerHTML = `
+      <button ${auditPage<=1?"disabled":""} id="auPrev">‹ Prev</button>
+      <span>Page ${auditPage} of ${totalPages} — ${total} event${total===1?"":"s"}</span>
+      <button ${auditPage>=totalPages?"disabled":""} id="auNext">Next ›</button>`;
+    const prevBtn = document.getElementById("auPrev"), nextBtn = document.getElementById("auNext");
+    if(prevBtn) prevBtn.addEventListener("click", () => { auditPage--; drawAuditTable(); });
+    if(nextBtn) nextBtn.addEventListener("click", () => { auditPage++; drawAuditTable(); });
+  }
+
+  function renderAuditTable(el, rows, withNote){
+    el.innerHTML = `
+      <thead><tr><th>Time</th><th>Event</th><th>Serial</th><th>Student No.</th>${withNote?"<th>Detail</th>":""}<th>Officer</th></tr></thead>
+      <tbody>${rows.map(a => `
+        <tr>
+          <td class="mono" style="white-space:nowrap;">${escapeHtml(a.ts)}</td>
+          <td><span class="badge ${a.type}">${TYPE_LABEL[a.type]}</span></td>
+          <td class="mono">${escapeHtml(a.serial||"—")}</td>
+          <td class="mono">${escapeHtml(maskStudentNo(a.studentNumber||"—"))}</td>
+          ${withNote ? `<td class="muted" style="font-size:12px; max-width:340px;">${escapeHtml(a.note||"")}</td>` : ""}
+          <td>${escapeHtml(a.officer||"—")}</td>
+        </tr>`).join("") || `<tr><td colspan="6" class="muted" style="text-align:center; padding:18px;">No events yet.</td></tr>`}
+      </tbody>`;
+  }
+
+  /* ---------------- role handling (PIN-gated administrator sign-in) ---------------- */
+  const roleSelect = document.getElementById("roleSelect");
+  const pinBackdrop = document.getElementById("pinBackdrop");
+  const pinInput = document.getElementById("pinInput");
+  const pinError = document.getElementById("pinError");
+
+  function openPinModal(){
+    pinInput.value = "";
+    pinError.textContent = "";
+    pinBackdrop.classList.add("open");
+    setTimeout(() => pinInput.focus(), 30);
+  }
+  function closePinModal(){
+    pinBackdrop.classList.remove("open");
+  }
+  function confirmPin(){
+    if(pinInput.value.trim() === state.adminPin){
+      currentRole = "admin";
+      roleSelect.value = "admin";
+      closePinModal();
+      afterRoleChange();
+    } else {
+      pinError.textContent = "Incorrect PIN. Please try again.";
+      pinInput.value = "";
+      pinInput.focus();
+    }
+  }
+  document.getElementById("pinConfirm").addEventListener("click", confirmPin);
+  document.getElementById("pinCancel").addEventListener("click", () => {
+    roleSelect.value = "officer";
+    closePinModal();
+  });
+  pinInput.addEventListener("keydown", (e) => {
+    if(e.key === "Enter") confirmPin();
+    if(e.key === "Escape"){ roleSelect.value = "officer"; closePinModal(); }
+  });
+
+  function afterRoleChange(){
+    updateTabVisibility();
+    const activeTab = document.querySelector(".tab-btn.active").dataset.tab;
+    if(activeTab === "register") renderRegisterPanel();
+    if(activeTab === "database") drawDbTable();
+  }
+
+  roleSelect.addEventListener("change", () => {
+    if(roleSelect.value === "admin" && currentRole !== "admin"){
+      roleSelect.value = "officer";
+      openPinModal();
+    } else if(roleSelect.value === "officer"){
+      currentRole = "officer";
+      afterRoleChange();
+    }
+  });
+
+  /* ---------------- change administrator PIN (Administrator only) ---------------- */
+  const changePinBtn = document.getElementById("changePinBtn");
+  const changePinBackdrop = document.getElementById("changePinBackdrop");
+  const cpCurrent = document.getElementById("cpCurrent");
+  const cpNew = document.getElementById("cpNew");
+  const cpConfirm = document.getElementById("cpConfirm");
+  const cpError = document.getElementById("cpError");
+
+  function openChangePinModal(){
+    if(!isAdmin()) return; // only the signed-in Administrator may change the PIN
+    cpCurrent.value = ""; cpNew.value = ""; cpConfirm.value = "";
+    cpError.textContent = "";
+    changePinBackdrop.classList.add("open");
+    setTimeout(() => cpCurrent.focus(), 30);
+  }
+  function closeChangePinModal(){
+    changePinBackdrop.classList.remove("open");
+  }
+  function saveNewPin(){
+    if(!isAdmin()){ closeChangePinModal(); return; }
+    const current = cpCurrent.value.trim();
+    const next = cpNew.value.trim();
+    const confirm = cpConfirm.value.trim();
+
+    if(current !== state.adminPin){
+      cpError.textContent = "Current PIN is incorrect.";
+      return;
+    }
+    if(!/^\d{4,6}$/.test(next)){
+      cpError.textContent = "New PIN must be 4 to 6 digits.";
+      return;
+    }
+    if(next !== confirm){
+      cpError.textContent = "New PIN and confirmation do not match.";
+      return;
+    }
+    state.adminPin = next;
+    logAudit({ type:"system", serial:"—", studentNumber:"—", name:null, officer:"System Administrator", note:"Administrator PIN was changed." });
+    saveState();
+    closeChangePinModal();
+  }
+  changePinBtn.addEventListener("click", openChangePinModal);
+  document.getElementById("cpSave").addEventListener("click", saveNewPin);
+  document.getElementById("cpCancel").addEventListener("click", closeChangePinModal);
+  changePinBackdrop.addEventListener("click", (e) => { if(e.target === changePinBackdrop) closeChangePinModal(); });
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && changePinBackdrop.classList.contains("open")) closeChangePinModal();
+  });
+  [cpCurrent, cpNew, cpConfirm].forEach(inp => inp.addEventListener("keydown", (e) => {
+    if(e.key === "Enter") saveNewPin();
+  }));
+
+  /* ---------------- init ---------------- */
+  buildScenarios();
+  updateTabVisibility();
+  showTab("verify");
+})();
+</script>
+</body>
+</html>
