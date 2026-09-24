@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>UL Laptop Registration & Pass-Out Verification System</title>
+<title>UL Laptop Registration &amp; Pass-Out Verification System</title>
 <style>
   :root {
     --bg:#f5f7fa; --surface:#ffffff; --surface-alt:#eaf0f6; --border:#d7dee6;
@@ -329,7 +329,15 @@
     <div class="pagination" id="dbPagination"></div>
   </section>
 
-  
+  <!-- AUDIT LOG -->
+  <section class="panel" data-panel="audit">
+    <h2 class="section-title">Audit Log</h2>
+    <p class="section-desc">A permanent, append-only record of every pass-out check and registration event. Entries cannot be edited or deleted from this interface — only added to.</p>
+    <div class="toolbar">
+      <div class="filters" id="auditFilters"></div>
+    </div>
+    <div class="table-wrap"><table id="auditTable"></table></div>
+    <div class="pagination" id="auditPagination"></div>
   </section>
 
 </main>
