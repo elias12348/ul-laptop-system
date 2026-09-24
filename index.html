@@ -222,7 +222,7 @@
   <div class="modal-card pin">
     <h3>Administrator sign-in</h3>
     <p>Enter the System Administrator PIN to continue.</p>
-    <input type="password" id="pinInput" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="Enter PIN">
+    <input type="password" id="pinInput" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Enter PIN">
     <div id="pinError" class="pin-error"></div>
     <div class="btn-row">
       <button class="btn btn-primary" id="pinConfirm">Confirm</button>
@@ -239,7 +239,7 @@
       <input type="password" id="cpCurrent" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Current PIN">
     </label>
     <label class="field" style="margin-bottom:10px;">New PIN
-      <input type="password" id="cpNew" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="New PIN (4–10 digits)">
+      <input type="password" id="cpNew" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="New PIN (4–6 digits)">
     </label>
     <label class="field">Confirm new PIN
       <input type="password" id="cpConfirm" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Re-enter new PIN">
@@ -460,7 +460,7 @@
 
   /* ---------------- storage layer ---------------- */
   const STORE_KEY = "ul_laptop_registration_system_v1";
-  const DEFAULT_ADMIN_PIN = "8711011020";
+  const DEFAULT_ADMIN_PIN = "871101";
   let state = null;
 
   function loadState(){
