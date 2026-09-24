@@ -222,7 +222,7 @@
   <div class="modal-card pin">
     <h3>Administrator sign-in</h3>
     <p>Enter the System Administrator PIN to continue.</p>
-    <input type="password" id="pinInput" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Enter PIN">
+    <input type="password" id="pinInput" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="Enter PIN">
     <div id="pinError" class="pin-error"></div>
     <div class="btn-row">
       <button class="btn btn-primary" id="pinConfirm">Confirm</button>
@@ -239,7 +239,7 @@
       <input type="password" id="cpCurrent" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Current PIN">
     </label>
     <label class="field" style="margin-bottom:10px;">New PIN
-      <input type="password" id="cpNew" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="New PIN (4–6 digits)">
+      <input type="password" id="cpNew" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="New PIN (4–10 digits)">
     </label>
     <label class="field">Confirm new PIN
       <input type="password" id="cpConfirm" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Re-enter new PIN">
@@ -329,15 +329,7 @@
     <div class="pagination" id="dbPagination"></div>
   </section>
 
-  <!-- AUDIT LOG -->
-  <section class="panel" data-panel="audit">
-    <h2 class="section-title">Audit Log</h2>
-    <p class="section-desc">A permanent, append-only record of every pass-out check and registration event. Entries cannot be edited or deleted from this interface — only added to.</p>
-    <div class="toolbar">
-      <div class="filters" id="auditFilters"></div>
-    </div>
-    <div class="table-wrap"><table id="auditTable"></table></div>
-    <div class="pagination" id="auditPagination"></div>
+  
   </section>
 
 </main>
